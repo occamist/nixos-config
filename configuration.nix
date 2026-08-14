@@ -121,31 +121,12 @@
     blur-my-shell
     caffeine
     appindicator # verify exact attr name for "appindicatorsupport" on search.nixos.org
-    # ding
     # solaar-extension: verify exact nixpkgs attr name, may need an overlay/fetched package
   ]) ++ [
-    # --- TODO: bulk of the ~225 direct-rename CLI/GUI packages from
-    # arch-explicit-pkgs.txt go here. All system-wide on purpose - this is
-    # a single-user machine, so per-user home-manager packages would just
-    # be a second place to look for no benefit. home.nix is reserved for
-    # things that actually need home-manager's structured program modules
-    # (programs.git, programs.zed-editor, dconf.settings).
-    # Deliberately left unfilled rather than guessing 200+ nixpkgs attr
-    # names without verifying each one against search.nixos.org.
-    # Already-certain ones to start from:
     git
     vim
+    curl
     wget
-    # gcc/gnumake: "base"/"base-devel" themselves don't map to packages -
-    # Nix's own internal build sandbox has its own toolchain, separate from
-    # what's in your shell PATH - but confirmed real usage of gcc/make
-    # directly (fish history: repeated `make DAY=N`, a "use gcc for c++23"
-    # commit, main.cc files) means these need adding explicitly
-    gcc
-    gnumake
-    # efibootmgr dropped - not needed by systemd-boot (unlike GRUB, which
-    # used it internally), and no evidence of manual use either
-    # smartmontools dropped - no evidence of smartctl/smartd usage
     docker-buildx
     docker-compose
     ripgrep
@@ -165,14 +146,14 @@
     dbeaver-bin # renamed from "dbeaver"
     beekeeper-studio
     git-lfs
-    gh # renamed from "github-cli"
+    gh
     goreleaser
     graphviz
     hugo
     pnpm
     shellcheck
     uv
-    libappindicator-gtk3 # renamed from "libappindicator", used by tray-icon apps (e.g. solaar)
+    libappindicator-gtk3
 
     # --- Category B: CLI utilities ---
     _7zip-zstd # zstd/brotli/lz4 fork, not the official 7zz - deliberate choice
@@ -191,8 +172,7 @@
     wl-clipboard
     xdg-utils
     yt-dlp
-    # iwd / wireless_tools dropped - NetworkManager is confirmed using its
-    # default wpa_supplicant backend, iwd.service was disabled/unused
+    claude-code
 
     # --- Category C: GUI apps (only ones NOT already covered by GNOME's
     # default core-apps/core-shell package sets - see notes above) ---
@@ -204,26 +184,19 @@
            # (older GTK3 viewer) is a separate package, added explicitly
     firefox
     geary
-    gnome-tweaks # not in core-apps/core-shell defaults either - another
-                 # early unverified assumption, actually checked now
+    gnome-tweaks
     impression
     kooha
     libreoffice-still
     mpv
     obsidian
     pavucontrol
-    papirus-icon-theme # was a manually-dropped ~/.icons dir on Arch, not a
-                       # pacman package - found via `gsettings get
-                       # org.gnome.desktop.interface icon-theme`
+    papirus-icon-theme
     rygel # UPnP/DLNA media sharing, actually used
     solaar
-    tor-browser # renamed from "torbrowser-launcher" - that's a download/verify/launch
-                # utility for distros without a direct package; Nix already
-                # builds+verifies the browser itself, so the launcher's job is moot
+    tor-browser
     vlc
-    texlive.combined.scheme-full # covers Thai + every other language collection
-    # grilo-plugins dropped - already a runtime dep of gnome-music/showtime's
-    # own nixpkgs derivation, not something to declare separately
+    texlive.combined.scheme-full
     # network-manager-applet dropped - redundant under full GNOME Shell,
     # which has native network/VPN UI in Quick Settings
     # orca dropped - not actively used
