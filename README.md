@@ -2,4 +2,4 @@
 
 One ring to rule them all
 
-[wallpaper](./assets/wallpaper.jpeg)
+![wallpaper](./assets/wallpaper.jpeg)
