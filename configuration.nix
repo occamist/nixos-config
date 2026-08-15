@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, inputs, ... }:
 
 {
   nixpkgs.config.allowUnfree = true;
@@ -188,7 +188,8 @@
     ++ (with pkgs.gnomeExtensions; [
       blur-my-shell
       caffeine
-    ]);
+    ])
+    ++ [ inputs.fetch.packages.${pkgs.system}.default ];
 
   # --- Nerd Fonts
   fonts.packages =
