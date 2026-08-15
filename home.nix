@@ -254,45 +254,45 @@ in
       global_lsp_settings.semantic_token_rules = [
         {
           token_type = "namespace";
-          foreground_color = "#E5C17C";
+          foreground_color = "#E5C17C"; # yellow
         }
         {
           token_type = "type";
           token_modifiers = [ "declaration" ];
-          foreground_color = "#E5C17C";
+          foreground_color = "#E5C17C"; # yellow
         }
         {
           token_type = "type";
           token_modifiers = [ "definition" ];
-          foreground_color = "#E5C17C";
+          foreground_color = "#E5C17C"; # yellow
         }
         {
           token_type = "type";
-          foreground_color = "#c679dd";
+          foreground_color = "#c679dd"; # purple
         }
         {
           token_type = "parameter";
-          foreground_color = "#D19A66";
+          foreground_color = "#D19A66"; # orange
         }
         {
           token_type = "variable";
-          foreground_color = "#D19A66";
+          foreground_color = "#D19A66"; # orange
         }
         {
           token_type = "property";
-          foreground_color = "#D19A66";
+          foreground_color = "#D19A66"; # orange
         }
         {
           token_type = "operator";
-          foreground_color = "#61AFEF";
+          foreground_color = "#61AFEF"; # blue
         }
       ];
 
       theme_overrides."One Dark Pro".syntax = {
-        namespace.color = "#E5C17C";
-        variable.color = "#D19A66";
-        property.color = "#D19A66";
-        type.color = "#c679dd";
+        namespace.color = "#E5C17C"; # yellow
+        variable.color = "#D19A66"; # orange
+        property.color = "#D19A66"; # orange
+        type.color = "#c679dd"; # purple
       };
     };
   };
