@@ -106,7 +106,7 @@
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
-      ExecStart = "${pkgs.glib}/bin/gdbus call --system --dest org.freedesktop.Accounts --object-path /org/freedesktop/Accounts/User1000 --method org.freedesktop.Accounts.User.SetIconFile ${./assets/wallpaper.jpeg}";
+      ExecStart = "${pkgs.glib}/bin/gdbus call --system --dest org.freedesktop.Accounts --object-path /org/freedesktop/Accounts/User1000 --method org.freedesktop.Accounts.User.SetIconFile ${./assets/ring.jpeg}";
     };
   };
   users.users."occamist" = {
