@@ -150,6 +150,42 @@ in
 
       # Extensions disabled by default, auto-enable them on install.
       settings."extensions.autoDisableScopes" = 0;
+
+      # Trim down the Firefox Home / New Tab page.
+      settings."browser.newtabpage.activity-stream.feeds.section.topstories" = false; # Stories (Pocket)
+      settings."browser.newtabpage.activity-stream.showSponsored" = false; # Sponsored stories
+      settings."browser.newtabpage.activity-stream.showSponsoredTopSites" = false; # Sponsored shortcuts
+      settings."browser.newtabpage.activity-stream.showSponsoredCheckboxes" = false; # "Support Firefox" checkbox group in Settings > Home
+      settings."browser.topsites.contile.enabled" = false; # Sponsored top-site tile provider (Contile)
+      settings."browser.newtabpage.activity-stream.showWeather" = false; # Weather widget
+      settings."browser.newtabpage.activity-stream.logowordmark.alwaysVisible" = false; # Firefox logo/wordmark (still shows unless all sections above are also disabled)
+
+      # Hide the Bookmarks.
+      settings."browser.toolbars.bookmarks.visibility" = "never";
+
+      # Privacy & Security: don't send data to Mozilla Corporation.
+      settings."datareporting.healthreport.uploadEnabled" = false;
+      settings."datareporting.usage.uploadEnabled" = false;
+
+      # Block all the AI features.
+      settings."browser.ai.control.default" = "blocked";
+      settings."browser.ai.control.linkPreviewKeyPoints" = "blocked";
+      settings."browser.ai.control.pdfjsAltText" = "blocked";
+      settings."browser.ai.control.sidebarChatbot" = "blocked";
+      settings."browser.ai.control.smartTabGroups" = "blocked";
+      settings."browser.ai.control.smartWindow" = "blocked";
+      settings."browser.ai.control.translations" = "blocked";
+      settings."browser.ml.chat.enabled" = false;
+      settings."browser.ml.chat.page" = false;
+      settings."browser.ml.linkPreview.enabled" = false;
+      settings."browser.tabs.groups.smart.enabled" = false;
+      settings."browser.tabs.groups.smart.userEnabled" = false;
+
+      # Forget all Passwords & Autofill.
+      settings."signon.rememberSignons" = false; # Save logins and passwords
+      settings."extensions.formautofill.addresses.enabled" = false; # Save and fill addresses
+      settings."extensions.formautofill.creditCards.enabled" = false; # Save and fill payment methods
+      settings."privacy.clearOnShutdown_v2.formdata" = true; # Clear form data on shutdown
     };
   };
 
