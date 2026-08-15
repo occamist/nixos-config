@@ -28,7 +28,7 @@ in
     enable = true;
     enableDefaultConfig = false;
     settings."*" = {
-      IdentityFile = [ "~/.ssh/github" ];
+      IdentityFile = [ "~/.ssh/github" "~/.ssh/namecheap" "~/.ssh/linode" ];
       AddKeysToAgent = "yes";
     };
   };
