@@ -69,11 +69,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1786778668,
-        "narHash": "sha256-xeT0+Cw4IPJuc1EEixJoJBil9VGRXVY5hzYxl3kMJWg=",
+        "lastModified": 1786779747,
+        "narHash": "sha256-DETaB4i52blP88FqiHCRmNm8z33+eJsrRQIuO21j5UQ=",
         "owner": "occamist",
         "repo": "keyboard-app",
-        "rev": "94ce11fff32f0761139ba65678a2379b0c910930",
+        "rev": "50d1877f915754059776778130b7a1a204ce37af",
         "type": "github"
       },
       "original": {
