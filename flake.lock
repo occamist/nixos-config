@@ -62,6 +62,26 @@
         "type": "github"
       }
     },
+    "keyboard-app": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1786778668,
+        "narHash": "sha256-xeT0+Cw4IPJuc1EEixJoJBil9VGRXVY5hzYxl3kMJWg=",
+        "owner": "occamist",
+        "repo": "keyboard-app",
+        "rev": "94ce11fff32f0761139ba65678a2379b0c910930",
+        "type": "github"
+      },
+      "original": {
+        "owner": "occamist",
+        "repo": "keyboard-app",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1786711500,
@@ -119,6 +139,7 @@
       "inputs": {
         "fetch": "fetch",
         "home-manager": "home-manager",
+        "keyboard-app": "keyboard-app",
         "nixpkgs": "nixpkgs",
         "nixpkgs-latest": "nixpkgs-latest",
         "nur": "nur"

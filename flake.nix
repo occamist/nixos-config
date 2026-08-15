@@ -19,6 +19,11 @@
       url = "github:areofyl/fetch";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    keyboard-app = {
+      url = "github:occamist/keyboard-app";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =

@@ -152,6 +152,7 @@
       aspellDicts.en
       btop
       claude-code
+      discord
       docker-buildx
       docker-compose
       dust
@@ -186,10 +187,15 @@
       yt-dlp
     ]
     ++ (with pkgs.gnomeExtensions; [
+      appindicator
       blur-my-shell
       caffeine
+      status-icons
     ])
-    ++ [ inputs.fetch.packages.${pkgs.system}.default ];
+    ++ [
+      inputs.fetch.packages.${pkgs.stdenv.hostPlatform.system}.default
+      inputs.keyboard-app.packages.${pkgs.stdenv.hostPlatform.system}.default
+    ];
 
   # --- Nerd Fonts
   fonts.packages =

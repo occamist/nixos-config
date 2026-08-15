@@ -69,8 +69,8 @@ in
       enabled-extensions = [
         "blur-my-shell@aunetx"
         "caffeine@patapon.info"
-        #"appindicatorsupport@rgcjonas.gmail.com" # AppIndicator and KStatusNotifierItem by by 3v1n0 (legacy)
-        #"status-icons@gnome-shell-extensions.gcampax.github.com" # Status Icons by fmuellner (new)
+        "appindicatorsupport@rgcjonas.gmail.com" # AppIndicator and KStatusNotifierItem by by 3v1n0 (legacy)
+        "status-icons@gnome-shell-extensions.gcampax.github.com" # Status Icons by fmuellner (new)
       ];
     };
     "org/gnome/desktop/interface" = {
