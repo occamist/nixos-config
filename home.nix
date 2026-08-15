@@ -1,5 +1,11 @@
-{ config, pkgs, ... }:
+{ pkgs, inputs, ...}:
 
+let
+  pkgs-latest = import inputs.nixpkgs-latest {
+    system = pkgs.stdenv.hostPlatform.system;
+    config.allowUnfree = true;
+  };
+in
 {
   home.username = "occamist";
   home.homeDirectory = "/home/occamist";
@@ -41,8 +47,14 @@
     settings = {
       user.name = "Talha Altinel";
       user.email = "22800416+occamist@users.noreply.github.com";
-      url."ssh://git@github.com/".insteadOf = [ "https://github.com/" "http://github.com/" ];
-      url."ssh://git@gitlab.com/".insteadOf = [ "https://gitlab.com/" "http://gitlab.com/" ];
+      url."ssh://git@github.com/".insteadOf = [
+        "https://github.com/"
+        "http://github.com/"
+      ];
+      url."ssh://git@gitlab.com/".insteadOf = [
+        "https://gitlab.com/"
+        "http://gitlab.com/"
+      ];
       core.editor = "vim";
       pull.ff = "only";
       push.autoSetupRemote = true;
@@ -93,8 +105,8 @@
       spell-check-languages = [ "en_GB" ];
     };
     "org/gnome/desktop/background" = {
-      picture-uri = "file://${config.home.homeDirectory}/.config/background";
-      picture-uri-dark = "file://${config.home.homeDirectory}/.config/background";
+      picture-uri = "file://${pkgs.nixos-artwork.wallpapers.dracula.src}";
+      picture-uri-dark = "file://${pkgs.nixos-artwork.wallpapers.dracula.src}";
       picture-options = "zoom";
     };
     "org/gnome/settings-daemon/plugins/media-keys" = {
@@ -114,8 +126,7 @@
       name = "browser";
     };
   };
-  home.file.".config/background".source = ./assets/wallpaper.jpeg;
-  home.file.".face".source = ./assets/wallpaper.jpeg;
+  home.file.".face".source = ./assets/ring.jpeg;
 
   # --- Firefox
   programs.firefox = {
@@ -145,6 +156,7 @@
   # --- Zed editor
   programs.zed-editor = {
     enable = true;
+    package = pkgs-latest.zed-editor;
     extensions = [
       "astro"
       "coverage-lsp"

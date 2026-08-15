@@ -150,7 +150,7 @@
       asciiquarium
       aspell
       aspellDicts.en
-      #btop
+      btop
       claude-code
       docker-buildx
       docker-compose
