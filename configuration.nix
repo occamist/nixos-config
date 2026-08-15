@@ -1,21 +1,76 @@
-{ config, pkgs, inputs, ... }:
+{ config, pkgs, ... }:
 
 {
-  nixpkgs.overlays = [ inputs.rust-overlay.overlays.default ];
   nixpkgs.config.allowUnfree = true;
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
 
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  # nix-ld: lets Zed's downloaded LSP servers/extension binaries (pre-built,
+  # dynamically linked, expect a standard FHS layout) resolve their dynamic
+  # libraries on NixOS without manual wrapping.
+  programs.nix-ld.enable = true;
 
-  # NixOS's built-in nix.gc module has no count-based "keep last N
-  # generations" option - nix-collect-garbage only supports -d (delete ALL
-  # old generations unconditionally) or --delete-older-than (age-based).
-  # "Keep last 20 always" needs `nix-env --delete-generations +20`
-  # directly (confirmed: +N keeps the N most recent, deletes the rest),
-  # so this replaces the declarative nix.gc module with a custom timer.
-  # (boot.loader.systemd-boot.configurationLimit, which only bounds
-  # boot-menu entries rather than pruning generations, was considered and
-  # deliberately left unset - default is show-all, and this timer already
-  # keeps the underlying generation count in check.)
+  # --- Bootloader / Kernel
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = true;
+  hardware.enableRedistributableFirmware = true;
+  boot.kernelPackages = pkgs.linuxPackages_latest;
+
+  # --- Networking
+  networking.hostName = "angmar";
+  networking.networkmanager.enable = true;
+
+  # --- Bluetooth
+  hardware.bluetooth.enable = true;
+  hardware.bluetooth.powerOnBoot = true;
+
+  # --- Locale
+  time.timeZone = "Europe/London";
+  i18n.defaultLocale = "en_US.UTF-8";
+  i18n.extraLocaleSettings = {
+    LC_ADDRESS = "en_GB.UTF-8";
+    LC_IDENTIFICATION = "en_GB.UTF-8";
+    LC_MEASUREMENT = "en_GB.UTF-8";
+    LC_MONETARY = "en_GB.UTF-8";
+    LC_NAME = "en_GB.UTF-8";
+    LC_NUMERIC = "en_GB.UTF-8";
+    LC_PAPER = "en_GB.UTF-8";
+    LC_TELEPHONE = "en_GB.UTF-8";
+    LC_TIME = "en_GB.UTF-8";
+  };
+  console.keyMap = "uk";
+
+  # --- GNOME
+  services.xserver.enable = true;
+  services.displayManager.gdm.enable = true;
+  services.desktopManager.gnome.enable = true;
+  environment.gnome.excludePackages = [ pkgs.epiphany ];
+  services.xserver.xkb = {
+    layout = "gb";
+    variant = "";
+  };
+  services.gnome.gnome-browser-connector.enable = true;
+
+  # --- CUPS to print docs
+  services.printing.enable = true;
+
+  # --- Audio (Pipewire)
+  services.pulseaudio.enable = false;
+  services.pipewire = {
+    enable = true;
+    alsa.enable = true;
+    alsa.support32Bit = true;
+    pulse.enable = true;
+    jack.enable = true;
+    # use the example session manager (no others are packaged yet so this is enabled by default,
+    # no need to redefine it in your config for now)
+    #media-session.enable = true;
+  };
+  security.rtkit.enable = true;
+
+  # --- Nix GC
   systemd.services.nix-gc-keep-generations = {
     description = "Prune Nix system profile to the last 20 generations, then garbage collect";
     serviceConfig.Type = "oneshot";
@@ -32,196 +87,134 @@
     };
   };
 
-  # nix-ld: lets Zed's downloaded LSP servers/extension binaries (pre-built,
-  # dynamically linked, expect a standard FHS layout) resolve their dynamic
-  # libraries on NixOS without manual wrapping.
-  programs.nix-ld.enable = true;
-
-  # --- Boot ---
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-  hardware.cpu.amd.updateMicrocode = true;
-  hardware.enableRedistributableFirmware = true;
-
-  # --- Networking ---
-  networking.hostName = "bumblebee";
-  networking.networkmanager.enable = true;
-
-  # --- Locale / keyboard (matches current Arch localectl/timedatectl output) ---
-  time.timeZone = "Europe/London";
-  i18n.defaultLocale = "en_US.UTF-8";
-  i18n.extraLocaleSettings = {
-    LC_NUMERIC = "en_GB.UTF-8";
-    LC_TIME = "en_GB.UTF-8";
-    LC_MONETARY = "en_GB.UTF-8";
-    LC_PAPER = "en_GB.UTF-8";
-    LC_MEASUREMENT = "en_GB.UTF-8";
-  };
-  console.keyMap = "uk";
-
-  # --- Desktop (GNOME/Wayland via GDM, matching current setup) ---
-  services.xserver.enable = true;
-  services.xserver.xkb = {
-    layout = "gb";
-    model = "pc105";
-    options = "terminate:ctrl_alt_bksp";
-  };
-  services.xserver.displayManager.gdm.enable = true;
-  services.xserver.desktopManager.gnome.enable = true;
-  services.gnome.gnome-keyring.enable = true;
-  # epiphany installs by default with core-apps; not wanted (Firefox/Chromium used instead)
-  services.gnome.core-apps.excludePackages = [ pkgs.epiphany ];
-  services.gvfs.enable = true; # already mkDefault true via core-shell, set explicitly anyway
-
-  # --- Audio (pipewire, replacing pulseaudio-era packages) ---
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
-    pulse.enable = true;
-    jack.enable = true;
-  };
-  security.rtkit.enable = true;
-
-  # --- Bluetooth ---
-  hardware.bluetooth.enable = true;
-  hardware.bluetooth.powerOnBoot = true;
-
-  # --- GPU (AMD iGPU, Radeon 840M/860M "Krackan") ---
-  hardware.graphics = {
-    enable = true;
-    enable32Bit = true;
-  };
-
-  # --- Docker ---
+  # --- Docker
   virtualisation.docker.enable = true;
 
-  # --- Swap ---
+  # --- Swap
   zramSwap.enable = true;
 
-  # --- Solaar (Logitech wireless devices) ---
-  hardware.logitech.wireless.enable = true;
-
-  # --- User ---
-  users.users.occamist = {
-    isNormalUser = true;
-    description = "Talha Altinel";
-    shell = pkgs.fish;
-    extraGroups = [ "wheel" "docker" "input" "networkmanager" ];
+  # --- User
+  # GDM/GNOME Settings read the account avatar from AccountsService, not
+  # ~/.face, so register it declaratively via the same D-Bus call GNOME
+  # Settings itself makes. Runs after accounts-daemon so it self-heals if
+  # /var/lib/AccountsService is ever wiped.
+  systemd.services.set-user-icon = {
+    description = "Register occamist's AccountsService icon";
+    wantedBy = [ "graphical.target" ];
+    after = [ "accounts-daemon.service" ];
+    requires = [ "accounts-daemon.service" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = "${pkgs.glib}/bin/gdbus call --system --dest org.freedesktop.Accounts --object-path /org/freedesktop/Accounts/User1000 --method org.freedesktop.Accounts.User.SetIconFile ${./assets/wallpaper.jpeg}";
+    };
   };
-  # root stays on the NixOS default (bash) - only occamist's login shell is fish
-  programs.fish.enable = true; # registers fish in /etc/shells; config itself lives in home.nix
+  users.users."occamist" = {
+    isNormalUser = true;
+    description = "occamist";
+    shell = pkgs.fish;
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+      "docker"
+      "input"
+    ];
+    packages = with pkgs; [
+      beekeeper-studio
+      celluloid
+      chromium
+      converseen
+      dbeaver-bin
+      deja-dup
+      evince # older GTK3 viewer, pre-cursor to papers GTK4
+      geary
+      gnome-tweaks
+      impression
+      kooha
+      libreoffice
+      mpv
+      obsidian
+      pavucontrol
+      tor-browser
+      vlc
+    ];
+  };
+  programs.fish.enable = true; # to register to /etc/shells
 
-  # --- GNOME extension packages ---
-  # enabling them (dconf enabled-extensions list) is handled in home.nix,
-  # NOT here - installing the package alone does not activate it.
-  environment.systemPackages = with pkgs; [
-    gnome-shell-extensions # provides user-theme, status-icons
-  ] ++ (with pkgs.gnomeExtensions; [
-    blur-my-shell
-    caffeine
-    appindicator # verify exact attr name for "appindicatorsupport" on search.nixos.org
-    # solaar-extension: verify exact nixpkgs attr name, may need an overlay/fetched package
-  ]) ++ [
-    git
-    vim
-    curl
-    wget
-    docker-buildx
-    docker-compose
-    ripgrep
-    fd
-    fzf
-    jq
-    tree
-    btop
-    fastfetch
-    go
-    golangci-lint
-    kubectl
-    k9s
-    helm
+  # List packages installed in system
+  environment.systemPackages =
+    with pkgs;
+    [
+      alsa-utils
+      asciinema
+      asciiquarium
+      aspell
+      aspellDicts.en
+      btop
+      claude-code
+      docker-buildx
+      docker-compose
+      dust
+      fastfetch
+      fd
+      fzf
+      gh
+      go
+      golangci-lint
+      helm
+      hugo
+      inxi
+      jq
+      k9s
+      kubectl
+      mandoc
+      nil
+      nixd
+      (papirus-icon-theme.override { color = "paleorange"; })
+      pnpm
+      python3
+      rclone
+      ripgrep
+      shellcheck
+      texlive.combined.scheme-full
+      tree
+      usbutils
+      uv
+      vim
+      wget
+      wl-clipboard
+      yt-dlp
+    ]
+    ++ (with pkgs.gnomeExtensions; [
+      blur-my-shell
+      caffeine
+    ]);
 
-    # --- Category A: dev tools / language & infra tooling ---
-    dbeaver-bin # renamed from "dbeaver"
-    beekeeper-studio
-    git-lfs
-    gh
-    goreleaser
-    graphviz
-    hugo
-    pnpm
-    shellcheck
-    uv
-    libappindicator-gtk3
+  # Some programs need SUID wrappers, can be configured further or are
+  # started in user sessions.
+  # programs.mtr.enable = true;
+  # programs.gnupg.agent = {
+  #   enable = true;
+  #   enableSSHSupport = true;
+  # };
 
-    # --- Category B: CLI utilities ---
-    _7zip-zstd # zstd/brotli/lz4 fork, not the official 7zz - deliberate choice
-    alsa-utils
-    asciinema
-    asciiquarium
-    rclone
-    aspell
-    aspellDicts.en
-    du-dust
-    inxi
-    less
-    mandoc
-    nano
-    usbutils
-    wl-clipboard
-    xdg-utils
-    yt-dlp
-    claude-code
+  # Enable the OpenSSH daemon.
+  # services.openssh.enable = true;
 
-    # --- Category C: GUI apps (only ones NOT already covered by GNOME's
-    # default core-apps/core-shell package sets - see notes above) ---
-    celluloid
-    chromium
-    converseen
-    deja-dup
-    evince # papers is what GNOME's core-apps installs by default; evince
-           # (older GTK3 viewer) is a separate package, added explicitly
-    firefox
-    geary
-    gnome-tweaks
-    impression
-    kooha
-    libreoffice-still
-    mpv
-    obsidian
-    pavucontrol
-    papirus-icon-theme
-    rygel # UPnP/DLNA media sharing, actually used
-    solaar
-    tor-browser
-    vlc
-    texlive.combined.scheme-full
-    # network-manager-applet dropped - redundant under full GNOME Shell,
-    # which has native network/VPN UI in Quick Settings
-    # orca dropped - not actively used
-    # xdg-desktop-portal-gnome dropped - core-os-services already sets
-    # xdg.portal.extraPortals to include it
-    # wireplumber dropped - its enable option defaults to services.pipewire.enable
-    # libpulse dropped - apps that need it (gnome-shell confirmed via /proc
-    # maps, likely firefox/mpv/vlc/pavucontrol too) are all built from
-    # source by nixpkgs and get it via normal RPATH linking automatically;
-    # no confirmed case where nix-ld/an explicit package would be needed
-  ];
+  # --- Nerd Fonts
+  fonts.packages =
+    with pkgs;
+    [
+      freefont_ttf
+      sarabun-font
+    ]
+    ++ (builtins.attrValues (pkgs.lib.filterAttrs (_: pkgs.lib.isDerivation) pkgs.nerd-fonts));
 
-  # --- Fonts ---
-  # Nerd fonts: the whole collection, not a curated list - trades ~3GB of
-  # disk space for never having to maintain a per-font attribute list again.
-  # The old nerdfonts.override { fonts = [...]; } shortcut was removed from
-  # nixpkgs (23.11+), so this attrValues one-liner is the actual replacement,
-  # not a workaround. filterAttrs+isDerivation guards against non-derivation
-  # entries in the set (e.g. stray meta/override attrs).
-  fonts.packages = with pkgs; [
-    freefont_ttf # renamed from "gnu-free-fonts"
-    sarabun-font # Thai font, was a manually-dropped file in /usr/share/fonts on
-                 # Arch, owned by no package - not something pacman-based
-                 # migration would've caught either, found by checking fc-list
-  ] ++ (builtins.attrValues (pkgs.lib.filterAttrs (_: pkgs.lib.isDerivation) pkgs.nerd-fonts));
-
+  # This value determines the NixOS release from which the default
+  # settings for stateful data, like file locations and database versions
+  # on your system were taken. It‘s perfectly fine and recommended to leave
+  # this value at the release version of the first install of this system.
+  # Before changing this value read the documentation for this option
+  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "26.05";
 }

@@ -1,54 +1,148 @@
-{ config, pkgs, lib, inputs, ... }:
+{ config, pkgs, ... }:
 
 {
   home.username = "occamist";
   home.homeDirectory = "/home/occamist";
-  home.stateVersion = "26.05"; # match configuration.nix's system.stateVersion
+  home.stateVersion = "26.05";
 
-  # --- SSH (ported from ~/.ssh/config - linode dropped, not carried over) ---
-  programs.ssh = {
+  programs.home-manager.enable = true;
+  programs.fish = {
     enable = true;
-    matchBlocks."*" = {
-      identityFile = [ "~/.ssh/github" "~/.ssh/namecheap" ];
-      addKeysToAgent = "yes";
+    interactiveShellInit = ''
+      set -g fish_greeting
+    '';
+    shellAliases = {
+      zed = "zeditor";
     };
   };
+  programs.starship.enable = true;
 
-  # allowed_signers only contains public key material (matches github.pub),
-  # not a secret like the private keys - safe to generate declaratively
-  # and commit, unlike the actual key files.
+  # --- SSH
+  programs.ssh = {
+    enable = true;
+    enableDefaultConfig = false;
+    settings."*" = {
+      IdentityFile = [ "~/.ssh/github" ];
+      AddKeysToAgent = "yes";
+    };
+  };
   home.file.".ssh/allowed_signers".text =
-    "22800416+occamist@users.noreply.github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJ1/cTs8rLtx6SUCNN0/dQQfZ4Rvm50ygVpJj5NKb1MK 22800416+occamist@users.noreply.github.com\n";
+    "22800416+occamist@users.noreply.github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHHEF5OE1lUdjl9wb5rtPib8o+TldrE1PEnlYEKBpAQ/ 22800416+occamist@users.noreply.github.com\n";
 
-  # --- Git (ported from ~/.gitconfig, SSH-based commit signing) ---
+  # --- Git
   programs.git = {
     enable = true;
-    userName = "Talha Altinel";
-    userEmail = "22800416+occamist@users.noreply.github.com";
+    lfs.enable = true;
     signing = {
       key = "~/.ssh/github.pub";
       format = "ssh";
       signByDefault = true;
     };
-    extraConfig = {
+    settings = {
+      user.name = "Talha Altinel";
+      user.email = "22800416+occamist@users.noreply.github.com";
       url."ssh://git@github.com/".insteadOf = [ "https://github.com/" "http://github.com/" ];
       url."ssh://git@gitlab.com/".insteadOf = [ "https://gitlab.com/" "http://gitlab.com/" ];
-      filter.lfs = {
-        required = true;
-        clean = "git-lfs clean -- %f";
-        smudge = "git-lfs smudge -- %f";
-        process = "git-lfs filter-process";
-      };
       core.editor = "vim";
       pull.ff = "only";
       push.autoSetupRemote = true;
       init.defaultBranch = "main";
       gpg.ssh.allowedSignersFile = "~/.ssh/allowed_signers";
-      tag.gpgSign = true;
     };
   };
 
-  # --- Zed editor (declarative extensions + settings, ported from ~/.config/zed/settings.json) ---
+  # --- GNOME extensions & settings
+  dconf.settings = {
+    "org/gnome/shell" = {
+      enabled-extensions = [
+        "blur-my-shell@aunetx"
+        "caffeine@patapon.info"
+        #"appindicatorsupport@rgcjonas.gmail.com" # AppIndicator and KStatusNotifierItem by by 3v1n0 (legacy)
+        #"status-icons@gnome-shell-extensions.gcampax.github.com" # Status Icons by fmuellner (new)
+      ];
+    };
+    "org/gnome/desktop/interface" = {
+      icon-theme = "Papirus";
+      monospace-font-name = "MesloLGL Nerd Font 10";
+      accent-color = "slate";
+    };
+    "org/gnome/Console" = {
+      theme = "night";
+    };
+    "org/gnome/desktop/wm/preferences" = {
+      button-layout = "appmenu:minimize,close";
+    };
+    "org/gnome/mutter" = {
+      workspaces-only-on-primary = false; # workspaces span all monitors, relevant given the external display
+    };
+    "org/gnome/desktop/peripherals/touchpad" = {
+      click-method = "fingers";
+      two-finger-scrolling-enabled = true;
+    };
+    "org/gnome/nautilus/compression" = {
+      default-compression-format = "7z";
+    };
+    "org/gnome/nautilus/icon-view" = {
+      default-zoom-level = "small-plus";
+    };
+    "org/gnome/nautilus/preferences" = {
+      default-folder-viewer = "icon-view";
+      search-filter-time-type = "last_modified";
+    };
+    "org/gnome/Geary" = {
+      spell-check-languages = [ "en_GB" ];
+    };
+    "org/gnome/desktop/background" = {
+      picture-uri = "file://${config.home.homeDirectory}/.config/background";
+      picture-uri-dark = "file://${config.home.homeDirectory}/.config/background";
+      picture-options = "zoom";
+    };
+    "org/gnome/settings-daemon/plugins/media-keys" = {
+      custom-keybindings = [
+        "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/"
+        "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/"
+      ];
+    };
+    "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
+      binding = "<Super>t";
+      command = "kgx";
+      name = "terminal";
+    };
+    "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1" = {
+      binding = "<Super>b";
+      command = "firefox";
+      name = "browser";
+    };
+  };
+  home.file.".config/background".source = ./assets/wallpaper.jpeg;
+  home.file.".face".source = ./assets/wallpaper.jpeg;
+
+  # --- Firefox
+  programs.firefox = {
+    enable = true;
+    package = pkgs.firefox.override {
+      nativeMessagingHosts = [ pkgs.gnome-browser-connector ];
+    };
+
+    profiles.occamist = {
+      isDefault = true;
+
+      extensions.packages = with pkgs.nur.repos.rycee.firefox-addons; [
+        ublock-origin
+        bitwarden
+        refined-github
+        yomitan
+        languagetool
+        gnome-shell-integration
+        search-by-image
+      ];
+
+      # Extensions disabled by default, auto-enable them on install.
+      settings."extensions.autoDisableScopes" = 0;
+    };
+  };
+
+  # --- Zed editor
   programs.zed-editor = {
     enable = true;
     extensions = [
@@ -61,6 +155,7 @@
       "make"
       "markdownlint"
       "material-icon-theme"
+      "nix"
       "one-dark-pro"
       "rainbow-csv"
       "scss"
@@ -74,7 +169,9 @@
       colorize_brackets = true;
 
       agent_servers = {
-        codex-acp = { type = "registry"; };
+        codex-acp = {
+          type = "registry";
+        };
         claude-acp = {
           default_config_options = {
             model = "sonnet";
@@ -143,14 +240,40 @@
       };
 
       global_lsp_settings.semantic_token_rules = [
-        { token_type = "namespace"; foreground_color = "#E5C17C"; }
-        { token_type = "type"; token_modifiers = [ "declaration" ]; foreground_color = "#E5C17C"; }
-        { token_type = "type"; token_modifiers = [ "definition" ]; foreground_color = "#E5C17C"; }
-        { token_type = "type"; foreground_color = "#c679dd"; }
-        { token_type = "parameter"; foreground_color = "#D19A66"; }
-        { token_type = "variable"; foreground_color = "#D19A66"; }
-        { token_type = "property"; foreground_color = "#D19A66"; }
-        { token_type = "operator"; foreground_color = "#61AFEF"; }
+        {
+          token_type = "namespace";
+          foreground_color = "#E5C17C";
+        }
+        {
+          token_type = "type";
+          token_modifiers = [ "declaration" ];
+          foreground_color = "#E5C17C";
+        }
+        {
+          token_type = "type";
+          token_modifiers = [ "definition" ];
+          foreground_color = "#E5C17C";
+        }
+        {
+          token_type = "type";
+          foreground_color = "#c679dd";
+        }
+        {
+          token_type = "parameter";
+          foreground_color = "#D19A66";
+        }
+        {
+          token_type = "variable";
+          foreground_color = "#D19A66";
+        }
+        {
+          token_type = "property";
+          foreground_color = "#D19A66";
+        }
+        {
+          token_type = "operator";
+          foreground_color = "#61AFEF";
+        }
       ];
 
       theme_overrides."One Dark Pro".syntax = {
@@ -162,116 +285,9 @@
     };
   };
 
-  # --- GNOME extensions: enable state (packages come from configuration.nix) ---
-  dconf.settings = {
-    "org/gnome/shell" = {
-      enabled-extensions = [
-        "blur-my-shell@aunetx"
-        "solaar-extension@sidevesh"
-        "appindicatorsupport@rgcjonas.gmail.com"
-        "caffeine@patapon.info"
-        "user-theme@gnome-shell-extensions.gcampax.github.com"
-        "status-icons@gnome-shell-extensions.gcampax.github.com"
-      ];
-    };
-    "org/gnome/desktop/interface" = {
-      icon-theme = "Papirus"; # package added in configuration.nix
-      monospace-font-name = "MesloLGL Nerd Font 10"; # what GNOME Console
-        # actually reads (its own custom-font field is unused while
-        # use-system-font stays true, which is its default)
-      accent-color = "slate";
-    };
-    "org/gnome/Console" = {
-      theme = "night"; # dark-mode override, separate from the system light/dark preference
-    };
-    "org/gnome/desktop/wm/preferences" = {
-      button-layout = "appmenu:minimize,close"; # adds a minimize button, GNOME's default omits it
-    };
-    "org/gnome/mutter" = {
-      workspaces-only-on-primary = false; # workspaces span all monitors, relevant given the external display
-    };
-    "org/gnome/desktop/peripherals/touchpad" = {
-      click-method = "fingers";
-      two-finger-scrolling-enabled = true;
-    };
-    "org/gnome/nautilus/compression" = {
-      default-compression-format = "7z";
-    };
-    "org/gnome/nautilus/icon-view" = {
-      default-zoom-level = "small-plus";
-    };
-    "org/gnome/nautilus/preferences" = {
-      default-folder-viewer = "icon-view";
-      search-filter-time-type = "last_modified";
-    };
-    "org/gnome/Geary" = {
-      spell-check-languages = [ "en_GB" ];
-    };
-    "org/gnome/desktop/background" = {
-      picture-uri = "file://${config.home.homeDirectory}/.config/background";
-      picture-uri-dark = "file://${config.home.homeDirectory}/.config/background";
-      picture-options = "zoom";
-    };
-    "org/gnome/settings-daemon/plugins/media-keys" = {
-      custom-keybindings = [
-        "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/"
-        "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/"
-      ];
-    };
-    "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
-      binding = "<Super>t";
-      command = "kgx"; # GNOME Console - pending confirmation, see chat re: gnome-terminal
-      name = "terminal";
-    };
-    "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1" = {
-      binding = "<Super>b";
-      command = "firefox";
-      name = "browser";
-    };
-  };
-
-  # Wallpaper - a real personal image file, not a package. Copied into this
-  # repo (assets/wallpaper.jpeg) so it's version-controlled and reproducible
-  # rather than relying on a file that only exists on the old machine.
-  home.file.".config/background".source = ./assets/wallpaper.jpeg;
-
-  # All CLI/dev/GUI packages now live in configuration.nix's
-  # environment.systemPackages instead of here - single-user machine, so
-  # per-user home.packages just duplicated the lookup with no payoff.
-  # home.nix is reserved for things that need home-manager's structured
-  # program modules (git config generation, Zed settings.json generation,
-  # dconf, shell integration) rather than a plain package install.
-
-  # --- Fish (ported from ~/.config/fish/config.fish) ---
-  # System-level `programs.fish.enable` in configuration.nix registers
-  # fish in /etc/shells; this generates the actual user config.
-  programs.fish = {
-    enable = true;
-    interactiveShellInit = ''
-      set -g fish_greeting
-    '';
-    shellAliases = {
-      zed = "zeditor";
-    };
-  };
-
-  # starship needs real per-shell init-hook generation (not just a binary),
-  # so it's a home-manager program rather than a systemPackages entry.
-  # enableFishIntegration/enableBashIntegration default to true, so this
-  # also wires up bash even though only fish sourced it on Arch.
-  programs.starship.enable = true;
-
-  # rustup replacement: per-project toolchains via inputs.rust-overlay,
-  # e.g. in a project flake: rust-bin.stable.latest.default.override {
-  #   extensions = [ "clippy" "rustfmt" "rust-analyzer" ];
-  # }
-  # nvm replacement: fnm, or per-project nodejs_xx in a dev shell
-
-  # PATH additions ported from config.fish - genuinely user-specific
-  # (GOPATH, cargo, local installs), not a general system PATH policy.
   home.sessionPath = [
     "$HOME/go/bin"
     "$HOME/.cargo/bin"
-    "$HOME/.local/bin" # target dir used by the Antigravity CLI installer
+    "$HOME/.local/bin"
   ];
 }
