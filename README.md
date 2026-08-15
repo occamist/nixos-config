@@ -1,5 +1,5 @@
 # My NixOS Config
 
-One ring to rule them all
+Ash nazg durbatulûk!
 
-![wallpaper](./assets/wallpaper.jpeg)
+![wallpaper](./assets/ring.jpeg)
