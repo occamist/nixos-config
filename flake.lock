@@ -1,25 +1,5 @@
 {
   "nodes": {
-    "fetch": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1786320592,
-        "narHash": "sha256-8VY8PWvmIWxgUcn8qih5U2SI55+y47T4ODBNwMsWjyQ=",
-        "owner": "areofyl",
-        "repo": "fetch",
-        "rev": "54608bc919c2e072d250e1b23f47b9915e01a553",
-        "type": "github"
-      },
-      "original": {
-        "owner": "areofyl",
-        "repo": "fetch",
-        "type": "github"
-      }
-    },
     "flake-parts": {
       "inputs": {
         "nixpkgs-lib": [
@@ -122,11 +102,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1786838669,
-        "narHash": "sha256-4OdI4W9n9/3V2s+jbHd2uG645RThRreX9LGBuFmJlzc=",
+        "lastModified": 1786843002,
+        "narHash": "sha256-bvBSGjWB1F+hz3RJeB0Xa9ISU/1kFQROH/BkUIGrNYU=",
         "owner": "nix-community",
         "repo": "NUR",
-        "rev": "e0c84ea68e176ca393f21f351d4bd3700107cba2",
+        "rev": "583e9c16d87b2b7797967bb0a01469b088081649",
         "type": "github"
       },
       "original": {
@@ -137,7 +117,6 @@
     },
     "root": {
       "inputs": {
-        "fetch": "fetch",
         "home-manager": "home-manager",
         "keyboard-app": "keyboard-app",
         "nixpkgs": "nixpkgs",

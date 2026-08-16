@@ -1,5 +1,11 @@
 { config, pkgs, inputs, ... }:
 
+let
+  pkgs-latest = import inputs.nixpkgs-latest {
+    system = pkgs.stdenv.hostPlatform.system;
+    config.allowUnfree = true;
+  };
+in
 {
   nixpkgs.config.allowUnfree = true;
   nix.settings.experimental-features = [
@@ -194,7 +200,7 @@
       status-icons
     ])
     ++ [
-      inputs.fetch.packages.${pkgs.stdenv.hostPlatform.system}.default
+      pkgs-latest.fetch
       inputs.keyboard-app.packages.${pkgs.stdenv.hostPlatform.system}.default
     ];
 

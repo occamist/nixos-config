@@ -15,11 +15,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    fetch = {
-      url = "github:areofyl/fetch";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     keyboard-app = {
       url = "github:occamist/keyboard-app";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -39,7 +34,6 @@
       self,
       nixpkgs,
       home-manager,
-      nur,
       ...
     }@inputs:
     {
@@ -52,7 +46,6 @@
           home-manager.nixosModules.home-manager
           {
             nixpkgs.overlays = [
-              nur.overlays.default
               (final: _prev: {
                 tori = final.callPackage ./pkgs/tori { src = inputs.tori-src; };
               })

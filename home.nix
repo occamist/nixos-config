@@ -5,6 +5,7 @@ let
     system = pkgs.stdenv.hostPlatform.system;
     config.allowUnfree = true;
   };
+  firefox-addons = (pkgs.extend inputs.nur.overlays.default).nur.repos.rycee.firefox-addons;
 in
 {
   home.username = "occamist";
@@ -138,7 +139,7 @@ in
     profiles.occamist = {
       isDefault = true;
 
-      extensions.packages = with pkgs.nur.repos.rycee.firefox-addons; [
+      extensions.packages = with firefox-addons; [
         ublock-origin
         bitwarden
         refined-github
