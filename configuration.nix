@@ -178,6 +178,7 @@
       ripgrep
       shellcheck
       texlive.combined.scheme-full
+      tori
       tree
       usbutils
       uv

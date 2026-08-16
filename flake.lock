@@ -142,7 +142,25 @@
         "keyboard-app": "keyboard-app",
         "nixpkgs": "nixpkgs",
         "nixpkgs-latest": "nixpkgs-latest",
-        "nur": "nur"
+        "nur": "nur",
+        "tori-src": "tori-src"
+      }
+    },
+    "tori-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1706663522,
+        "narHash": "sha256-TR+DU29EGvZZSlS2p+jLmpCWe3SOHJn0t/urDV1Uckc=",
+        "owner": "LeoRiether",
+        "repo": "tori",
+        "rev": "0c27b324846ca4bf6a783968257897d31fb0e9dc",
+        "type": "github"
+      },
+      "original": {
+        "owner": "LeoRiether",
+        "ref": "v0.2.6",
+        "repo": "tori",
+        "type": "github"
       }
     }
   },

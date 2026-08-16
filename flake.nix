@@ -24,6 +24,14 @@
       url = "github:occamist/keyboard-app";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    tori-src = {
+      url = "github:LeoRiether/tori/v0.2.6";
+      # Tori ships no flake. Pinned to a tag, so `nix flake update`
+      # re-resolves to the same commit and can never move it; bump by editing the
+      # tag here.
+      flake = false;
+    };
   };
 
   outputs =
@@ -43,7 +51,12 @@
           ./hardware-configuration.nix
           home-manager.nixosModules.home-manager
           {
-            nixpkgs.overlays = [ nur.overlays.default ];
+            nixpkgs.overlays = [
+              nur.overlays.default
+              (final: _prev: {
+                tori = final.callPackage ./pkgs/tori { src = inputs.tori-src; };
+              })
+            ];
           }
           {
             home-manager.useGlobalPkgs = true;
