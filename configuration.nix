@@ -183,7 +183,7 @@ in
       rclone
       ripgrep
       shellcheck
-      texlive.combined.scheme-full
+      # texlive.combined.scheme-full // uncommented LaTeX support for testing updates sizes weekly
       tori
       tree
       usbutils
@@ -210,8 +210,11 @@ in
     [
       freefont_ttf
       sarabun-font
-    ]
-    ++ (builtins.attrValues (pkgs.lib.filterAttrs (_: pkgs.lib.isDerivation) pkgs.nerd-fonts));
+      # Only the Nerd Font actually referenced (home.nix monospace-font-name).
+      # Installing all of pkgs.nerd-fonts costs 7.7 GiB of closure that is
+      # re-downloaded in full on every nixpkgs mass rebuild.
+      nerd-fonts.meslo-lg
+    ];
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
