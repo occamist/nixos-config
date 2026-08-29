@@ -165,6 +165,7 @@ in
       fastfetch
       fd
       fzf
+      gcc
       gh
       go
       golangci-lint
