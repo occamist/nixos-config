@@ -232,7 +232,7 @@ in
 
       edit_predictions = {
         mode = "subtle";
-        provider = "zed";
+        provider = "copilot";
       };
 
       project_panel.dock = "left";
