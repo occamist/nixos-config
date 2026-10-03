@@ -77,21 +77,15 @@ in
   security.rtkit.enable = true;
 
   # --- Nix GC
-  systemd.services.nix-gc-keep-generations = {
-    description = "Prune Nix system profile to the last 20 generations, then garbage collect";
-    serviceConfig.Type = "oneshot";
-    script = ''
-      ${config.nix.package}/bin/nix-env --delete-generations --profile /nix/var/nix/profiles/system +20
-      ${config.nix.package}/bin/nix-collect-garbage
-    '';
+  nix.gc = {
+    automatic = true;
+    dates = "weekly";
+    persistent = true;
   };
-  systemd.timers.nix-gc-keep-generations = {
-    wantedBy = [ "timers.target" ];
-    timerConfig = {
-      OnCalendar = "weekly";
-      Persistent = true;
-    };
-  };
+  systemd.services.nix-gc.preStart = ''
+    ${config.nix.package}/bin/nix-env --delete-generations --profile /nix/var/nix/profiles/system +15
+  '';
+  nix.settings.auto-optimise-store = true;
 
   # --- Docker
   virtualisation.docker.enable = true;
@@ -133,7 +127,7 @@ in
       dbeaver-bin
       deja-dup
       evince # older GTK3 viewer, pre-cursor to papers GTK4
-      geary
+      thunderbird
       gnome-tweaks
       impression
       kooha
