@@ -145,6 +145,7 @@ in
   environment.systemPackages =
     with pkgs;
     [
+      air
       alsa-utils
       asciinema
       asciiquarium
@@ -170,8 +171,9 @@ in
       mandoc
       nil
       nixd
+      nodejs_24
       (papirus-icon-theme.override { color = "paleorange"; })
-      pnpm
+      pnpm_12
       python314
       rclone
       ripgrep
