@@ -148,8 +148,6 @@ in
       alsa-utils
       asciinema
       asciiquarium
-      aspell
-      aspellDicts.en
       btop
       claude-code
       discord
@@ -161,7 +159,7 @@ in
       fzf
       gcc
       gh
-      go
+      go_1_27
       golangci-lint
       helm
       hugo
@@ -174,11 +172,10 @@ in
       nixd
       (papirus-icon-theme.override { color = "paleorange"; })
       pnpm
-      python3
+      python314
       rclone
       ripgrep
       shellcheck
-      # texlive.combined.scheme-full // uncommented LaTeX support for testing updates sizes weekly
       tori
       tree
       usbutils
