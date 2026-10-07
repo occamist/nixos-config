@@ -1,4 +1,4 @@
-# My NixOS Config
+# My own bespoke NixOS
 
 Ash nazg durbatulûk!
 
