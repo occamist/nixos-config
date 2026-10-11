@@ -163,6 +163,7 @@ in
       gh
       go_1_27
       golangci-lint
+      gnumake
       helm
       hugo
       inxi
@@ -170,6 +171,7 @@ in
       k9s
       kubectl
       mandoc
+      micro
       nil
       nixd
       nodejs_24
