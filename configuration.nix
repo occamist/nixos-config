@@ -159,6 +159,7 @@ in
       fd
       fzf
       gcc
+      gcov2lcov
       gh
       go_1_27
       golangci-lint
