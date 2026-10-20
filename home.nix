@@ -56,7 +56,7 @@ in
         "https://gitlab.com/"
         "http://gitlab.com/"
       ];
-      core.editor = "vim";
+      core.editor = "micro";
       pull.ff = "only";
       push.autoSetupRemote = true;
       init.defaultBranch = "main";
