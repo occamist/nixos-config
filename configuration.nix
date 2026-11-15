@@ -150,7 +150,7 @@ in
       asciinema
       asciiquarium
       btop
-      claude-code
+      pkgs-latest.claude-code
       discord
       docker-buildx
       docker-compose
